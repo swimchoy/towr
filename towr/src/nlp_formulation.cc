@@ -103,7 +103,7 @@ NlpFormulation::MakeBaseVariables () const
 
   double x = final_base_.lin.p().x();
   double y = final_base_.lin.p().y();
-  double z = terrain_->GetHeight(x,y) - model_.kinematic_model_->GetNominalStanceInBase().front().z();
+  double z = terrain_->GetHeight(x,y) - model_->kinematic_model_->GetNominalStanceInBase().front().z();
   Vector3d final_pos(x, y, z);
 
   spline_lin->SetByLinearInterpolation(initial_base_.lin.p(), final_pos, params_.GetTotalTime());
@@ -142,7 +142,7 @@ NlpFormulation::MakeEndeffectorVariables () const
     double yaw = final_base_.ang.p().z();
     Eigen::Vector3d euler(0.0, 0.0, yaw);
     Eigen::Matrix3d w_R_b = EulerConverter::GetRotationMatrixBaseToWorld(euler);
-    Vector3d final_ee_pos_W = final_base_.lin.p() + w_R_b*model_.kinematic_model_->GetNominalStanceInBase().at(ee);
+    Vector3d final_ee_pos_W = final_base_.lin.p() + w_R_b*model_->kinematic_model_->GetNominalStanceInBase().at(ee);
     double x = final_ee_pos_W.x();
     double y = final_ee_pos_W.y();
     double z = terrain_->GetHeight(x,y);
@@ -169,8 +169,8 @@ NlpFormulation::MakeForceVariables () const
                                               params_.force_polynomials_per_stance_phase_);
 
     // initialize with mass of robot distributed equally on all legs
-    double m = model_.dynamic_model_->m();
-    double g = model_.dynamic_model_->g();
+    double m = model_->dynamic_model_->m();
+    double g = model_->dynamic_model_->g();
 
     Vector3d f_stance(0.0, 0.0, m*g/params_.GetEECount());
     nodes->SetByLinearInterpolation(f_stance, f_stance, T); // stay constant
@@ -237,7 +237,7 @@ NlpFormulation::MakeBaseRangeOfMotionConstraint (const SplineHolder& s) const
 NlpFormulation::ContraintPtrVec
 NlpFormulation::MakeDynamicConstraint(const SplineHolder& s) const
 {
-  auto constraint = std::make_shared<DynamicConstraint>(model_.dynamic_model_,
+  auto constraint = std::make_shared<DynamicConstraint>(model_->dynamic_model_,
                                                         params_.GetTotalTime(),
                                                         params_.dt_constraint_dynamic_,
                                                         s);
@@ -250,7 +250,7 @@ NlpFormulation::MakeRangeOfMotionBoxConstraint (const SplineHolder& s) const
   ContraintPtrVec c;
 
   for (int ee=0; ee<params_.GetEECount(); ee++) {
-    auto rom = std::make_shared<RangeOfMotionConstraint>(model_.kinematic_model_,
+    auto rom = std::make_shared<RangeOfMotionConstraint>(model_->kinematic_model_,
                                                          params_.GetTotalTime(),
                                                          params_.dt_constraint_range_of_motion_,
                                                          ee,

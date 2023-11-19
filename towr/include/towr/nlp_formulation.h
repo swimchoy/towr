@@ -100,7 +100,7 @@ public:
   BaseState initial_base_;
   BaseState final_base_;
   EEPos  initial_ee_W_;
-  RobotModel model_;
+  RobotModel::Ptr model_;
   HeightMap::Ptr terrain_;
   Parameters params_;
 

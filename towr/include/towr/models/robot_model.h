@@ -61,6 +61,8 @@ namespace towr {
  * @ingroup Robots
  */
 struct RobotModel {
+  using Ptr = std::shared_ptr<RobotModel>;
+
   /**
    * @brief Robots for which kinematic and dynamic models are implemented.
    *
