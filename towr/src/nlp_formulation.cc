@@ -101,12 +101,7 @@ NlpFormulation::MakeBaseVariables () const
 
   auto spline_lin = std::make_shared<NodesVariablesAll>(n_nodes, k3D, id::base_lin_nodes);
 
-  double x = final_base_.lin.p().x();
-  double y = final_base_.lin.p().y();
-  double z = terrain_->GetHeight(x,y) - model_->kinematic_model_->GetNominalStanceInBase().front().z();
-  Vector3d final_pos(x, y, z);
-
-  spline_lin->SetByLinearInterpolation(initial_base_.lin.p(), final_pos, params_.GetTotalTime());
+  spline_lin->SetByLinearInterpolation(initial_base_.lin.p(), final_base_.lin.p(), params_.GetTotalTime());
   spline_lin->AddStartBound(kPos, {X,Y,Z}, initial_base_.lin.p());
   spline_lin->AddStartBound(kVel, {X,Y,Z}, initial_base_.lin.v());
   spline_lin->AddFinalBound(kPos, params_.bounds_final_lin_pos_,   final_base_.lin.p());
