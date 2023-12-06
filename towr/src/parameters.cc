@@ -70,6 +70,8 @@ Parameters::Parameters ()
 
   // additional restrictions are set directly on the variables in nlp_factory,
   // such as e.g. initial and endeffector,...
+
+  bounds_ee_lin_pos_.clear();
 }
 
 void

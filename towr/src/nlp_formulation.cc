@@ -104,7 +104,7 @@ NlpFormulation::MakeBaseVariables () const
   spline_lin->SetByLinearInterpolation(initial_base_.lin.p(), final_base_.lin.p(), params_.GetTotalTime());
   spline_lin->AddStartBound(kPos, {X,Y,Z}, initial_base_.lin.p());
   spline_lin->AddStartBound(kVel, {X,Y,Z}, initial_base_.lin.v());
-  spline_lin->AddFinalBound(kPos, params_.bounds_final_lin_pos_,   final_base_.lin.p());
+  spline_lin->AddFinalBound(kPos, params_.bounds_final_lin_pos_, final_base_.lin.p());
   spline_lin->AddFinalBound(kVel, params_.bounds_final_lin_vel_, final_base_.lin.v());
   vars.push_back(spline_lin);
 
@@ -144,6 +144,17 @@ NlpFormulation::MakeEndeffectorVariables () const
     nodes->SetByLinearInterpolation(initial_ee_W_.at(ee), Vector3d(x,y,z), T);
 
     nodes->AddStartBound(kPos, {X,Y,Z}, initial_ee_W_.at(ee));
+
+    Eigen::VectorXd lb(3); lb.setZero();
+    Eigen::VectorXd ub(3); ub.setZero();
+    std::vector<int> dim;
+    for (auto& bound_ee_lin_pos: params_.bounds_ee_lin_pos_) {
+      dim.push_back(bound_ee_lin_pos.first);
+      lb(dim.back()) = bound_ee_lin_pos.second.first;
+      ub(dim.back()) = bound_ee_lin_pos.second.second;
+    }
+    nodes->AddMiddleBound(kPos, dim, lb, ub);
+
     vars.push_back(nodes);
   }
 

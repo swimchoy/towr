@@ -180,6 +180,19 @@ NodesVariables::AddFinalBound (Dx deriv, const std::vector<int>& dimensions,
   AddBounds(nodes_.size()-1, deriv, dimensions, val);
 }
 
+void
+NodesVariables::AddMiddleBound(towr::Dx deriv, const std::vector<int> &dimensions,
+                               const Eigen::VectorXd &lb,
+                               const Eigen::VectorXd &ub)
+{
+  for (int node_id = 1; node_id < nodes_.size() - 1; ++node_id)
+    for (auto dim : dimensions)
+      for (int idx=0; idx<GetRows(); ++idx)
+        for (auto nvi : GetNodeValuesInfo(idx))
+          if (nvi == NodeValueInfo(node_id, deriv, dim))
+            bounds_.at(idx) = ifopt::Bounds(lb(dim), ub(dim));
+}
+
 NodesVariables::NodeValueInfo::NodeValueInfo(int node_id, Dx deriv, int node_dim)
 {
   id_    = node_id;

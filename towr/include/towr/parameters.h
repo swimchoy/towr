@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TOWR_OPTIMIZATION_PARAMETERS_H_
 #define TOWR_OPTIMIZATION_PARAMETERS_H_
 
+#include <map>
 #include <vector>
 #include <array>
 #include <utility> // std::pair, std::make_pair
@@ -210,6 +211,8 @@ public:
    *  limiting this range can help convergence when optimizing gait.
    */
   std::pair<double,double> bound_phase_duration_;
+
+  std::map<int, std::pair<double, double>> bounds_ee_lin_pos_;
 
   /// Specifies that timings of all feet, so the gait, should be optimized.
   void OptimizePhaseDurations();

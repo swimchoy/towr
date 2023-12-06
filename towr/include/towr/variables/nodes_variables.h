@@ -203,6 +203,9 @@ public:
   void AddFinalBound(Dx deriv, const std::vector<int>& dimensions,
                      const VectorXd& val);
 
+  void AddMiddleBound(Dx deriv, const std::vector<int>& dimensions,
+                      const VectorXd& lb, const VectorXd& ub);
+
 protected:
   /**
    * @param n_dim  The number of dimensions (x,y,..) each node has.
