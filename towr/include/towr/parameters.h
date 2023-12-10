@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <array>
 #include <utility> // std::pair, std::make_pair
+#include <Eigen/Core>
 
 namespace towr {
 
@@ -212,8 +213,6 @@ public:
    */
   std::pair<double,double> bound_phase_duration_;
 
-  std::map<int, std::pair<double, double>> bounds_ee_lin_pos_;
-
   /// Specifies that timings of all feet, so the gait, should be optimized.
   void OptimizePhaseDurations();
 
@@ -231,6 +230,12 @@ public:
 
   /// Total duration [s] of the motion.
   double GetTotalTime() const;
+
+  /// custom
+  std::map<int, std::pair<double, double>> bounds_ee_lin_pos_;
+
+  std::vector<Eigen::VectorXd> base_initial_lin_traj_;
+
 };
 
 } // namespace towr

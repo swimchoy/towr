@@ -150,6 +150,46 @@ NodesVariables::SetByLinearInterpolation(const VectorXd& initial_val,
 }
 
 void
+NodesVariables::SetByLinearInterpolation(const std::vector<VectorXd> &values,
+                                         double t_total)
+{
+  // only set those that are part of optimization variables,
+  // do not overwrite phase-based parameterization
+  VectorXd travels(values.size());
+  travels.setZero();
+  for (int i = 1; i < values.size(); ++i)
+    travels[i] = (values[i] - values[i - 1]).norm();
+  travels /= travels.sum();
+
+  Eigen::VectorXi idxToChange(values.size());
+  idxToChange = (travels * GetRows()).cast<int>();
+  for (int i = 1; i < idxToChange.size(); ++i)
+    idxToChange[i] += idxToChange[i - 1];
+  idxToChange[idxToChange.size() - 1] = GetRows();
+
+  int valueIdx = 0;
+  for (int idx=0; idx<GetRows(); ++idx) {
+    if (idx >= idxToChange[valueIdx + 1])
+      ++valueIdx;
+
+    VectorXd dp = values[valueIdx + 1] - values[valueIdx];
+    VectorXd average_velocity = dp / (travels[valueIdx + 1] * t_total);
+    int num_nodes = idxToChange[valueIdx + 1] - idxToChange[valueIdx] + 1;
+
+    for (auto nvi : GetNodeValuesInfo(idx)) {
+      if (nvi.deriv_ == kPos) {
+        VectorXd pos = values[valueIdx] + (nvi.id_ - idxToChange[valueIdx]) / static_cast<double>(num_nodes-1) * dp;
+        nodes_.at(nvi.id_).at(kPos)(nvi.dim_) = pos(nvi.dim_);
+      }
+
+      if (nvi.deriv_ == kVel) {
+        nodes_.at(nvi.id_).at(kVel)(nvi.dim_) = average_velocity(nvi.dim_);
+      }
+    }
+  }
+}
+
+void
 NodesVariables::AddBounds(int node_id, Dx deriv,
                  const std::vector<int>& dimensions,
                  const VectorXd& val)

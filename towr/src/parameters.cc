@@ -72,6 +72,7 @@ Parameters::Parameters ()
   // such as e.g. initial and endeffector,...
 
   bounds_ee_lin_pos_.clear();
+  base_initial_lin_traj_.clear();
 }
 
 void

@@ -185,6 +185,9 @@ public:
                                 const VectorXd& final_val,
                                 double t_total);
 
+  void SetByLinearInterpolation(const std::vector<VectorXd> &values,
+                                double t_total);
+
   /**
    * @brief Restricts the first node in the spline.
    * @param deriv Which derivative (pos,vel,...) should be restricted.
