@@ -73,6 +73,7 @@ Parameters::Parameters ()
 
   bounds_ee_lin_pos_.clear();
   base_initial_lin_traj_.clear();
+  ee_initial_lin_traj_.clear();
 }
 
 void

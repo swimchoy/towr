@@ -139,14 +139,18 @@ NlpFormulation::MakeEndeffectorVariables () const
                                               params_.ee_polynomials_per_swing_phase_);
 
     // initialize towards final footholds
-    double yaw = final_base_.ang.p().z();
-    Eigen::Vector3d euler(0.0, 0.0, yaw);
-    Eigen::Matrix3d w_R_b = EulerConverter::GetRotationMatrixBaseToWorld(euler);
-    Vector3d final_ee_pos_W = final_base_.lin.p() + w_R_b*model_->kinematic_model_->GetNominalStanceInBase().at(ee);
-    double x = final_ee_pos_W.x();
-    double y = final_ee_pos_W.y();
-    double z = terrain_->GetHeight(x,y);
-    nodes->SetByLinearInterpolation(initial_ee_W_.at(ee), Vector3d(x,y,z), T);
+    if (params_.ee_initial_lin_traj_.empty() || params_.ee_initial_lin_traj_.at(ee).empty()) {
+      double yaw = final_base_.ang.p().z();
+      Eigen::Vector3d euler(0.0, 0.0, yaw);
+      Eigen::Matrix3d w_R_b = EulerConverter::GetRotationMatrixBaseToWorld(euler);
+      Vector3d final_ee_pos_W = final_base_.lin.p() + w_R_b * model_->kinematic_model_->GetNominalStanceInBase().at(ee);
+      double x = final_ee_pos_W.x();
+      double y = final_ee_pos_W.y();
+      double z = terrain_->GetHeight(x, y);
+      nodes->SetByLinearInterpolation(initial_ee_W_.at(ee), Vector3d(x, y, z), T);
+    } else {
+      nodes->SetByLinearInterpolation(params_.ee_initial_lin_traj_.at(ee), T);
+    }
 
     nodes->AddStartBound(kPos, {X,Y,Z}, initial_ee_W_.at(ee));
 

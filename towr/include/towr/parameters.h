@@ -236,6 +236,8 @@ public:
 
   std::vector<Eigen::VectorXd> base_initial_lin_traj_;
 
+  std::vector<std::vector<Eigen::VectorXd>> ee_initial_lin_traj_;
+
 };
 
 } // namespace towr
