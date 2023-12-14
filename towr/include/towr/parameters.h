@@ -145,7 +145,8 @@ public:
                         Force,          ///< sets ForceConstraint
                         Swing,          ///< sets SwingConstraint
                         BaseRom,        ///< sets BaseMotionConstraint
-                        BaseAcc         ///< sets SplineAccConstraint
+                        BaseAcc,        ///< sets SplineAccConstraint
+                        StepZone        ///< sets StepZoneConstraint
   };
   /**
    *  @brief Indentifiers to be used to add certain costs to the optimization
@@ -237,6 +238,10 @@ public:
   std::vector<Eigen::VectorXd> base_initial_lin_traj_;
 
   std::vector<std::vector<Eigen::VectorXd>> ee_initial_lin_traj_;
+
+  std::vector<Eigen::Vector2d> dis_step_centers_;
+
+  std::vector<std::pair<Eigen::MatrixXd, Eigen::VectorXd>> dis_step_half_spaces_;
 
 };
 

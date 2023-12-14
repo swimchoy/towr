@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <towr/constraints/terrain_constraint.h>
 #include <towr/constraints/total_duration_constraint.h>
 #include <towr/constraints/spline_acc_constraint.h>
+#include <towr/constraints/step_zone_constraint.h>
 
 #include <towr/costs/node_cost.h>
 #include <towr/variables/nodes_variables_all.h>
@@ -236,6 +237,7 @@ NlpFormulation::GetConstraint (Parameters::ConstraintName name,
     case Parameters::Force:          return MakeForceConstraint();
     case Parameters::Swing:          return MakeSwingConstraint();
     case Parameters::BaseAcc:        return MakeBaseAccConstraint(s);
+    case Parameters::StepZone:       return MakeStepZoneConstraint();
     default: throw std::runtime_error("constraint not defined!");
   }
 }
@@ -341,6 +343,21 @@ NlpFormulation::MakeBaseAccConstraint (const SplineHolder& s) const
 
   constraints.push_back(std::make_shared<SplineAccConstraint>
                         (s.base_angular_, id::base_ang_nodes));
+
+  return constraints;
+}
+
+NlpFormulation::ContraintPtrVec
+NlpFormulation::MakeStepZoneConstraint() const
+{
+  ContraintPtrVec constraints;
+
+  for (int ee=0; ee<params_.GetEECount(); ee++) {
+    auto c = std::make_shared<StepZoneConstraint>(params_.dis_step_centers_,
+                                                  params_.dis_step_half_spaces_,
+                                                  id::EEMotionNodes(ee));
+    constraints.push_back(c);
+  }
 
   return constraints;
 }
