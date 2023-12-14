@@ -64,9 +64,11 @@ StepZoneConstraint::GetBounds () const
   int row = 0;
   for (int id : node_ids_) {
     if (ee_motion_->IsConstantNode(id))
-      bounds.at(row) = ifopt::BoundSmallerZero;
+      for (int i = 0; i < num_half_spaces_per_sample_; ++i)
+        bounds.at(row + i) = ifopt::BoundSmallerZero;
     else
-      bounds.at(row) = ifopt::NoBound;
+      for (int i = 0; i < num_half_spaces_per_sample_; ++i)
+        bounds.at(row + i) = ifopt::NoBound;
     row += num_half_spaces_per_sample_;
   }
 
