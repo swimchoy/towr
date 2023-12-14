@@ -74,8 +74,7 @@ Parameters::Parameters ()
   bounds_ee_lin_pos_.clear();
   base_initial_lin_traj_.clear();
   ee_initial_lin_traj_.clear();
-  dis_step_centers_.clear();
-  dis_step_half_spaces_.clear();
+  step_zone_property_.clear();
 }
 
 void

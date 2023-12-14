@@ -26,7 +26,8 @@ public:
   using Vector2d = Eigen::Vector2d;
   using Vector3d = Eigen::Vector3d;
 
-  StepZoneConstraint (const std::vector<Vector2d> &points,
+  StepZoneConstraint (const double &stepZoneSize,
+                      const std::vector<Vector2d> &stepCenters,
                       const std::vector<std::pair<Eigen::MatrixXd, Eigen::VectorXd>> &stepHalfSpaces,
                       const std::string &ee_motion);
   ~StepZoneConstraint () override = default;
@@ -39,9 +40,11 @@ public:
 
 private:
   [[nodiscard]] int GetClosestStepIdx (const Vector2d &p) const;
+  [[nodiscard]] bool isInStepZone (const Vector2d &p) const;
   NodesVariablesPhaseBased::Ptr ee_motion_;
 
   int num_half_spaces_per_sample_;
+  double step_zone_size_;
   std::vector<Vector2d> step_centers_;
   std::vector<std::pair<Eigen::MatrixXd, Eigen::VectorXd>> step_half_spaces_;
 

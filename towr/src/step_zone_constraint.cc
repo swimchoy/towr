@@ -14,13 +14,15 @@
 namespace towr
 {
 
-StepZoneConstraint::StepZoneConstraint (const std::vector<Vector2d> &points,
+StepZoneConstraint::StepZoneConstraint (const double &stepZoneSize,
+                                        const std::vector<Vector2d> &stepCenters,
                                         const std::vector<std::pair<Eigen::MatrixXd, Eigen::VectorXd>> &stepHalfSpaces,
                                         const std::string &ee_motion)
     :ConstraintSet(kSpecifyLater, "step_zone-" + ee_motion)
 {
   ee_motion_id_ = ee_motion;
-  step_centers_ = points;
+  step_zone_size_ = stepZoneSize;
+  step_centers_ = stepCenters;
   step_half_spaces_ = stepHalfSpaces;
   num_half_spaces_per_sample_ = static_cast<int>(step_half_spaces_.back().second.rows());
 }
@@ -49,8 +51,12 @@ StepZoneConstraint::GetValues () const
     Vector2d p = nodes.at(id).p().head(2);
     int idx = GetClosestStepIdx(p);
 
-    g.segment(row, num_half_spaces_per_sample_) =
-        step_half_spaces_[idx].first * p - step_half_spaces_[idx].second;
+    if (isInStepZone(p))
+      g.segment(row, num_half_spaces_per_sample_) =
+          step_half_spaces_[idx].first * p - step_half_spaces_[idx].second;
+    else
+      g.segment(row, num_half_spaces_per_sample_) =
+          VectorXd::Zero(num_half_spaces_per_sample_);
     row += num_half_spaces_per_sample_;
   }
   return g;
@@ -106,6 +112,12 @@ StepZoneConstraint::GetClosestStepIdx (const Vector2d &p) const
                                return (a - p).norm() < (b - p).norm();
                              });
   return static_cast<int>(std::distance(step_centers_.begin(), it));
+}
+
+bool
+StepZoneConstraint::isInStepZone (const Vector2d &p) const
+{
+  return std::abs(p.x()) < step_zone_size_ && std::abs(p.y()) < step_zone_size_;
 }
 
 } // namespace towr

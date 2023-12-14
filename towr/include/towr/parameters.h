@@ -38,6 +38,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace towr {
 
+struct StepZoneProperty {
+  double size_;
+  std::vector<Eigen::Vector2d> centers_;
+  std::vector<std::pair<Eigen::MatrixXd, Eigen::VectorXd>> half_spaces_;
+
+  void clear() {
+    size_ = 0;
+    centers_.clear();
+    half_spaces_.clear();
+  }
+};
+
 /**
  * @defgroup Parameters
  * @brief %Parameters to tune the optimization problem.
@@ -239,9 +251,7 @@ public:
 
   std::vector<std::vector<Eigen::VectorXd>> ee_initial_lin_traj_;
 
-  std::vector<Eigen::Vector2d> dis_step_centers_;
-
-  std::vector<std::pair<Eigen::MatrixXd, Eigen::VectorXd>> dis_step_half_spaces_;
+  StepZoneProperty step_zone_property_;
 
 };
 

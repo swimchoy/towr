@@ -353,8 +353,9 @@ NlpFormulation::MakeStepZoneConstraint() const
   ContraintPtrVec constraints;
 
   for (int ee=0; ee<params_.GetEECount(); ee++) {
-    auto c = std::make_shared<StepZoneConstraint>(params_.dis_step_centers_,
-                                                  params_.dis_step_half_spaces_,
+    auto c = std::make_shared<StepZoneConstraint>(params_.step_zone_property_.size_,
+                                                  params_.step_zone_property_.centers_,
+                                                  params_.step_zone_property_.half_spaces_,
                                                   id::EEMotionNodes(ee));
     constraints.push_back(c);
   }
