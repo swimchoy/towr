@@ -313,7 +313,8 @@ NlpFormulation::MakeForceConstraint () const
   for (int ee=0; ee<params_.GetEECount(); ee++) {
     auto c = std::make_shared<ForceConstraint>(terrain_,
                                                params_.force_limit_in_normal_direction_,
-                                               ee);
+                                               ee,
+                                               params_.bounds_ee_force_rate_);
     constraints.push_back(c);
   }
 

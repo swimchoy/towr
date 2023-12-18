@@ -72,6 +72,8 @@ Parameters::Parameters ()
   // such as e.g. initial and endeffector,...
 
   bounds_ee_lin_pos_.clear();
+  bounds_ee_force_rate_.clear();
+
   base_initial_lin_traj_.clear();
   ee_initial_lin_traj_.clear();
   step_zone_property_.clear();

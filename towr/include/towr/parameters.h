@@ -253,6 +253,8 @@ public:
 
   StepZoneProperty step_zone_property_;
 
+  std::map<int, std::pair<double, double>> bounds_ee_force_rate_;
+
 };
 
 } // namespace towr

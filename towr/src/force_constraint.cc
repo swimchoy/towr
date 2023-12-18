@@ -36,15 +36,17 @@ namespace towr {
 
 ForceConstraint::ForceConstraint (const HeightMap::Ptr& terrain,
                                   double force_limit,
-                                  EE ee)
+                                  EE ee,
+                                  const std::map<int, std::pair<double, double>> &force_rate_limits)
     :ifopt::ConstraintSet(kSpecifyLater, "force-" + id::EEForceNodes(ee))
 {
   terrain_ = terrain;
   fn_max_  = force_limit;
   mu_      = terrain->GetFrictionCoeff();
   ee_      = ee;
+  force_rate_limits_ = force_rate_limits;
 
-  n_constraints_per_node_ = 1 + 2*k2D; // positive normal force + 4 friction pyramid constraints
+  n_constraints_per_node_ = 1 + 2 * k2D + force_rate_limits_.size(); // positive normal force + 4 friction pyramid constraints
 }
 
 void
@@ -83,6 +85,13 @@ ForceConstraint::GetValues () const
     Vector3d t2 = terrain_->GetNormalizedBasis(HeightMap::Tangent2, p.x(), p.y());
     g(row++) = f.transpose() * (t2 - mu_*n); // t2 < mu*n
     g(row++) = f.transpose() * (t2 + mu_*n); // t2 > -mu*n
+
+    for (auto lim : force_rate_limits_) {
+      Vector3d fr = force_nodes.at(f_node_id).v();
+      if (lim.first == X) g(row++) = fr.transpose() * t1;
+      else if (lim.first == Y) g(row++) = fr.transpose() * t2;
+      else if (lim.first == Z) g(row++) = fr.transpose() * n;
+    }
   }
 
   return g;
@@ -99,6 +108,8 @@ ForceConstraint::GetBounds () const
     bounds.push_back(ifopt::BoundGreaterZero); // f_t1 > -mu*n
     bounds.push_back(ifopt::BoundSmallerZero); // f_t2 <  mu*n
     bounds.push_back(ifopt::BoundGreaterZero); // f_t2 > -mu*n
+    for (auto lim : force_rate_limits_)
+      bounds.emplace_back(lim.second.first, lim.second.second);
   }
 
   return bounds;
@@ -128,6 +139,14 @@ ForceConstraint::FillJacobianBlock (std::string var_set,
         jac.coeffRef(row_reset++, idx) = t1(dim)+mu_*n(dim);  // f_t1 > -mu*n
         jac.coeffRef(row_reset++, idx) = t2(dim)-mu_*n(dim);  // f_t2 <  mu*n
         jac.coeffRef(row_reset++, idx) = t2(dim)+mu_*n(dim);  // f_t2 > -mu*n
+
+        for (auto lim : force_rate_limits_) {
+          int vidx = ee_force_->GetOptIndex(NodesVariables::NodeValueInfo(f_node_id, kVel, dim));
+
+          if (lim.first == X) jac.coeffRef(row_reset++, vidx) = t1(dim);
+          else if (lim.first == Y) jac.coeffRef(row_reset++, vidx) = t2(dim);
+          else if (lim.first == Z) jac.coeffRef(row_reset++, vidx) = n(dim);
+        }
       }
 
       row += n_constraints_per_node_;

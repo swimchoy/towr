@@ -65,7 +65,8 @@ public:
    */
   ForceConstraint (const HeightMap::Ptr& terrain,
                    double force_limit_in_normal_direction,
-                   EE endeffector_id);
+                   EE endeffector_id,
+                   const std::map<int, std::pair<double, double>> &force_rate_limits={});
   virtual ~ForceConstraint () = default;
 
   void InitVariableDependedQuantities(const VariablesPtr& x) override;
@@ -83,6 +84,8 @@ private:
   double mu_;              ///< friction coeff between robot feet and terrain.
   int n_constraints_per_node_; ///< number of constraint for each node.
   EE ee_;                  ///< The endeffector force to be constrained.
+
+  std::map<int, std::pair<double, double>> force_rate_limits_;
 
   /**
    * The are those Hermite-nodes that shape the polynomial during the
