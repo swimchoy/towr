@@ -105,7 +105,6 @@ NlpFormulation::MakeBaseVariables () const
   if (params_.base_initial_lin_traj_.empty()) {
     spline_lin->SetByLinearInterpolation(initial_base_.lin.p(), final_base_.lin.p(), params_.GetTotalTime());
   } else {
-    std::cout << "Using user-provided initial base trajectory." << std::endl;
     spline_lin->SetByLinearInterpolation(params_.base_initial_lin_traj_, params_.GetTotalTime());
   }
   spline_lin->AddStartBound(kPos, {X,Y,Z}, initial_base_.lin.p());
